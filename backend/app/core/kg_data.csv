@@ -1,0 +1,7 @@
+"subject,relation,object,pmids"
+"Amyloid beta,ASSOCIATED_WITH,Alzheimer's Disease,12345678;23456789"
+"Tau protein,INVOLVED_IN,Neurofibrillary tangles,34567890"
+"Neuroinflammation,EXACERBATES,Neuronal damage,45678901;56789012"
+"APOE4,RISK_FACTOR_FOR,Alzheimer's Disease,67890123"
+"Microglia,ACTIVATES,Neuroinflammation,78901234"
+"BDNF,PROTECTS_AGAINST,Neuronal damage,89012345"

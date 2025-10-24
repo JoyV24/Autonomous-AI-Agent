@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Research Assistant</title>
+    <style>
+        /* CSS Variables */
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --error-color: #dc2626;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-light: #9ca3af;
+            --border-color: #e5e7eb;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+
+        .header-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--card-bg);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* Status Grid */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+        }
+
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .status-good {
+            background-color: #d1fae5;
+            color: var(--success-color);
+        }
+
+        .status-bad {
+            background-color: #fee2e2;
+            color: var(--error-color);
+        }
+
+        .status-info {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .form-check-input {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-color);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.875rem;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .alert-error {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: var(--error-color);
+        }
+
+        .alert-info {
+            background-color: #eff6ff;
+            border: 1px solid #dbeafe;
+            color: var(--primary-color);
+        }
+
+        .alert-warning {
+            background-color: #fffbeb;
+            border: 1px solid #fed7aa;
+            color: var(--warning-color);
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Results Section */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .results-summary {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Hypothesis Cards */
+        .hypothesis-card {
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 24px;
+            transition: transform 0.2s;
+        }
+
+        .hypothesis-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .hypothesis-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .hypothesis-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: #eff6ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .hypothesis-title {
+            flex: 1;
+        }
+
+        .hypothesis-statement {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .badge-primary {
+            background: #eff6ff;
+            color: var(--primary-color);
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: var(--success-color);
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: var(--warning-color);
+        }
+
+        .badge-error {
+            background: #fee2e2;
+            color: var(--error-color);
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .evidence-list {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .evidence-item {
+            margin-bottom: 8px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .experiment-box {
+            background: #eff6ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .experiment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .safety-warning {
+            background: #fffbeb;
+            border: 1px solid #fed7aa;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        /* KG Triples */
+        .kg-triples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .kg-triple {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .kg-subject {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .kg-relation {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin: 8px 0;
+        }
+
+        .kg-object {
+            font-weight: 600;
+        }
+
+        .kg-pmids {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 8px;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: var(--text-light);
+        }
+
+        .mt-3 {
+            margin-top: 12px;
+        }
+
+        .mb-3 {
+            margin-bottom: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            .title {
+                font-size: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kg-triples-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .experiment-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-icon">🧬</div>
+            <h1 class="title">AI Research Assistant</h1>
+            <p class="subtitle">
+                Generate evidence-based biomedical hypotheses using PubMed literature and knowledge graphs
+            </p>
+        </div>
+
+        <!-- Status Indicator -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>🔧</span> System Status
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="status-grid" id="status-container">
+                    <!-- Status will be populated by JavaScript -->
+                </div>
+                <button class="btn btn-outline btn-sm" id="refresh-status">
+                    <span>🔄</span> Refresh Status
+                </button>
+            </div>
+        </div>
+
+        <!-- Error Alert -->
+        <div class="alert alert-error hidden" id="error-alert">
+            <span>⚠️</span>
+            <span id="error-message"></span>
+        </div>
+
+        <!-- Query Form -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>🔍</span> Research Query
+                </div>
+            </div>
+            <div class="card-body">
+                <form id="query-form">
+                    <div class="form-group">
+                        <label for="research-query" class="form-label">Research Question *</label>
+                        <textarea 
+                            id="research-query" 
+                            class="form-control" 
+                            placeholder="e.g., Suggest novel interventions for Alzheimer's disease focusing on neuroinflammation pathways..."
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="seed-input" class="form-label">Seed Input (Optional)</label>
+                        <input 
+                            type="text" 
+                            id="seed-input" 
+                            class="form-control" 
+                            placeholder="PMID or specific text to prioritize..."
+                        >
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="paper-count" class="form-label">Papers to Retrieve</label>
+                            <select id="paper-count" class="form-control">
+                                <option value="3">3 papers</option>
+                                <option value="5" selected>5 papers</option>
+                                <option value="8">8 papers</option>
+                                <option value="10">10 papers</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" id="creative-mode" class="form-check-input">
+                                <label for="creative-mode" class="form-label">Creative Mode</label>
+                            </div>
+                            <div id="creativity-container" class="hidden">
+                                <label for="creativity-level" class="form-label">Creativity Level</label>
+                                <input type="range" id="creativity-level" class="form-control" min="0" max="1" step="0.1" value="0.4">
+                                <div class="text-center text-muted" id="creativity-value">0.4</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="btn btn-primary" style="width: 100%;">
+                        <span>🚀</span> Generate Hypotheses
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="hidden">
+            <!-- Summary Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="results-header">
+                        <div class="card-title">
+                            <span>📊</span> Results
+                        </div>
+                        <div class="results-summary" id="results-summary">
+                            <span id="hypothesis-count">0 hypotheses</span> • 
+                            <span id="paper-count-result">0 papers</span> • 
+                            <span id="triple-count">0 KG triples</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info" id="results-note">
+                        <span>ℹ️</span>
+                        <span id="note-text">Analysis completed successfully</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Research Summary -->
+            <div id="summary-container" class="hidden">
+                <h3 style="margin-bottom: 20px;">Research Summary</h3>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="section-title">
+                            <span>📋</span> Overview
+                        </div>
+                        <p id="summary-overview" class="mb-3" style="line-height: 1.6;"></p>
+                        
+                        <div class="section-title">
+                            <span>🔑</span> Key Findings
+                        </div>
+                        <div id="summary-key-findings" class="evidence-list"></div>
+                        
+                        <div class="section-title">
+                            <span>🕳️</span> Knowledge Gaps
+                        </div>
+                        <div id="summary-knowledge-gaps" class="evidence-list"></div>
+                        
+                        <div class="section-title">
+                            <span>💡</span> Implications
+                        </div>
+                        <p id="summary-implications" style="line-height: 1.6;"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hypotheses -->
+            <div id="hypotheses-container">
+                <h3 style="margin-bottom: 20px;">Generated Hypotheses</h3>
+                <div id="hypotheses-list"></div>
+            </div>
+
+            <!-- Evidence Table -->
+            <div id="evidence-container">
+                <h3 style="margin-bottom: 20px;">Retrieved Evidence</h3>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>PMID</th>
+                                        <th>Title</th>
+                                        <th>Snippet</th>
+                                        <th>Score</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="evidence-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Graph Triples -->
+            <div id="kg-container">
+                <h3 style="margin-bottom: 20px;">Knowledge Graph Triples</h3>
+                <div id="kg-triples-list" class="kg-triples-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = "http://127.0.0.1:8000";
+        
+        // DOM Elements
+        const statusContainer = document.getElementById('status-container');
+        const errorAlert = document.getElementById('error-alert');
+        const errorMessage = document.getElementById('error-message');
+        const queryForm = document.getElementById('query-form');
+        const resultsSection = document.getElementById('results-section');
+        const hypothesesList = document.getElementById('hypotheses-list');
+        const evidenceTableBody = document.getElementById('evidence-table-body');
+        const kgTriplesList = document.getElementById('kg-triples-list');
+        const creativeModeCheckbox = document.getElementById('creative-mode');
+        const creativityContainer = document.getElementById('creativity-container');
+        const creativityLevel = document.getElementById('creativity-level');
+        const creativityValue = document.getElementById('creativity-value');
+        const submitBtn = document.getElementById('submit-btn');
+        
+        // Event Listeners
+        document.getElementById('refresh-status').addEventListener('click', checkSystemStatus);
+        creativeModeCheckbox.addEventListener('change', toggleCreativityControl);
+        creativityLevel.addEventListener('input', updateCreativityValue);
+        queryForm.addEventListener('submit', handleFormSubmit);
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSystemStatus();
+        });
+        
+        // Functions
+        function toggleCreativityControl() {
+            if (creativeModeCheckbox.checked) {
+                creativityContainer.classList.remove('hidden');
+            } else {
+                creativityContainer.classList.add('hidden');
+            }
+        }
+        
+        function updateCreativityValue() {
+            creativityValue.textContent = creativityLevel.value;
+        }
+        
+        async function checkSystemStatus() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/hypothesis/status`);
+                const data = await response.json();
+                updateStatusDisplay(data);
+            } catch (error) {
+                console.error('Error checking system status:', error);
+                updateStatusDisplay({
+                    status: 'error',
+                    pubmed_loaded: false,
+                    chroma_ready: false,
+                    neo4j_ready: false,
+                    llm_ready: false
+                });
+            }
+        }
+        
+        function updateStatusDisplay(status) {
+            const statusElements = {
+                pubmed: {
+                    icon: status.pubmed_loaded ? '✅' : '❌',
+                    text: status.pubmed_loaded ? 'Loaded' : 'Missing',
+                    class: status.pubmed_loaded ? 'status-good' : 'status-bad'
+                },
+                chroma: {
+                    icon: status.chroma_ready ? '✅' : '❌',
+                    text: status.chroma_ready ? 'Ready' : 'Not Built',
+                    class: status.chroma_ready ? 'status-good' : 'status-bad'
+                },
+                neo4j: {
+                    icon: status.neo4j_ready ? '✅' : '❌',
+                    text: status.neo4j_ready ? 'Connected' : 'Offline',
+                    class: status.neo4j_ready ? 'status-good' : 'status-bad'
+                },
+                llm: {
+                    icon: status.llm_ready ? '✅' : '❌',
+                    text: status.llm_ready ? 'Ready' : 'No API Key',
+                    class: status.llm_ready ? 'status-good' : 'status-bad'
+                }
+            };
+            
+            statusContainer.innerHTML = `
+                <div class="status-item">
+                    <div class="status-icon ${statusElements.pubmed.class}">
+                        📄
+                    </div>
+                    <div>
+                        <div style="font-weight: 600;">PubMed Data</div>
+                        <div class="status-info">${statusElements.pubmed.text}</div>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <div class="status-icon ${statusElements.chroma.class}">
+                        🗄️
+                    </div>
+                    <div>
+                        <div style="font-weight: 600;">Vector Store</div>
+                        <div class="status-info">${statusElements.chroma.text}</div>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <div class="status-icon ${statusElements.neo4j.class}">
+                        🔗
+                    </div>
+                    <div>
+                        <div style="font-weight: 600;">Knowledge Graph</div>
+                        <div class="status-info">${statusElements.neo4j.text}</div>
+                    </div>
+                </div>
+                <div class="status-item">
+                    <div class="status-icon ${statusElements.llm.class}">
+                        🤖
+                    </div>
+                    <div>
+                        <div style="font-weight: 600;">AI Model</div>
+                        <div class="status-info">${statusElements.llm.text}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        async function handleFormSubmit(e) {
+    e.preventDefault();
+    
+    const query = document.getElementById('research-query').value.trim();
+    if (!query) {
+        showError('Please enter a research question');
+        return;
+    }
+    
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="loading-spinner"></span> Generating Hypotheses...';
+    
+    // Hide previous errors
+    hideError();
+    
+    try {
+        const formData = {
+            query: query,
+            seeded_input: document.getElementById('seed-input').value.trim() || null,
+            top_k: parseInt(document.getElementById('paper-count').value),
+            creative_mode: document.getElementById('creative-mode').checked,
+            temperature: document.getElementById('creative-mode').checked ? 
+                parseFloat(document.getElementById('creativity-level').value) : 0.0
+        };
+        
+        const response = await fetch(`${API_BASE_URL}/api/hypothesis/generate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Server error: ${response.status} - ${errorText}`);
+        }
+        
+        const data = await response.json();
+        
+        // DEBUG: Log the actual response
+        console.log('RAW API RESPONSE:', data);
+        console.log('KG Triples data:', data.kg_triples);
+        console.log('KG Triples type:', typeof data.kg_triples);
+        console.log('KG Triples length:', data.kg_triples ? data.kg_triples.length : 'null');
+        
+        // Validate response structure
+        if (!data || typeof data !== 'object') {
+            throw new Error('Invalid response format from server');
+        }
+        
+        displayResults(data);
+        
+    } catch (error) {
+        console.error('API Error:', error);
+        showError(error.message || 'Failed to generate hypotheses. Please check if the backend server is running.');
+    } finally {
+        // Reset button state
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>🚀</span> Generate Hypotheses';
+    }
+}
+        
+        function displayResults(results) {
+    // Add comprehensive safety checks
+    if (!results) {
+        showError('No results received from server');
+        return;
+    }
+    
+    // Filter out invalid triples before counting
+    const validTriples = results.kg_triples && Array.isArray(results.kg_triples) 
+        ? results.kg_triples.filter(triple => 
+            triple && (triple.subject || triple.relation || triple.object)
+          )
+        : [];
+    
+    const safeResults = {
+        summary: results.summary || null,
+        hypotheses: Array.isArray(results.hypotheses) ? results.hypotheses : [],
+        evidence: Array.isArray(results.evidence) ? results.evidence : [],
+        kg_triples: validTriples, // Use filtered triples
+        note: results.note || 'Analysis completed successfully'
+    };
+    
+    // Update summary counts with valid data
+    document.getElementById('hypothesis-count').textContent = `${safeResults.hypotheses.length} hypotheses`;
+    document.getElementById('paper-count-result').textContent = `${safeResults.evidence.length} papers`;
+    document.getElementById('triple-count').textContent = `${safeResults.kg_triples.length} KG triples`;
+    document.getElementById('note-text').textContent = safeResults.note;
+    
+    // Display components in order
+    displaySummary(safeResults.summary);
+    displayHypotheses(safeResults.hypotheses);
+    displayEvidence(safeResults.evidence);
+    displayKGTriples(safeResults.kg_triples);
+    
+    // Show results section
+    resultsSection.classList.remove('hidden');
+    resultsSection.classList.add('fade-in');
+    
+    // Scroll to results
+    resultsSection.scrollIntoView({ behavior: 'smooth' });
+}
+        
+        function displaySummary(summary) {
+            const summaryContainer = document.getElementById('summary-container');
+            
+            if (!summary) {
+                summaryContainer.classList.add('hidden');
+                return;
+            }
+            
+            // Update summary content
+            document.getElementById('summary-overview').textContent = summary.overview || 'No overview available';
+            document.getElementById('summary-implications').textContent = summary.implications || 'No implications specified';
+            
+            // Display key findings
+           const keyFindingsList = document.getElementById('summary-key-findings');
+if (Array.isArray(summary.key_findings)) {
+    keyFindingsList.innerHTML = summary.key_findings.map(finding => 
+        `<div class="evidence-item">${finding}</div>`
+    ).join('');
+} else {
+    keyFindingsList.innerHTML = '<div class="evidence-item">No key findings available</div>';
+}
+            
+            // Display knowledge gaps
+            const knowledgeGapsList = document.getElementById('summary-knowledge-gaps');
+            if (Array.isArray(summary.knowledge_gaps)) {
+                knowledgeGapsList.innerHTML = summary.knowledge_gaps.map(gap => 
+                    `<div class="evidence-item">${gap}</div>`
+                ).join('');
+            } else {
+                knowledgeGapsList.innerHTML = '<div class="evidence-item">No knowledge gaps identified</div>';
+            }
+            
+            summaryContainer.classList.remove('hidden');
+        }
+        
+        function displayHypotheses(hypotheses) {
+            // Add safety check
+            if (!hypotheses || !Array.isArray(hypotheses)) {
+                hypotheses = [];
+            }
+            
+            if (hypotheses.length === 0) {
+                hypothesesList.innerHTML = `
+                    <div class="alert alert-warning text-center">
+                        <span>⚠️</span>
+                        No hypotheses generated. ${document.getElementById('note-text').textContent}
+                    </div>
+                `;
+                return;
+            }
+            
+            hypothesesList.innerHTML = hypotheses.map(hypothesis => {
+                // Add safety checks for each hypothesis property
+                const safeHypothesis = {
+                    id: hypothesis?.id || 'Unknown',
+                    statement: hypothesis?.statement || 'No statement provided',
+                    type: hypothesis?.type || 'unknown',
+                    plausibility: hypothesis?.plausibility || 'Unknown',
+                    confidence_score: hypothesis?.confidence_score || 0,
+                    supporting_evidence: Array.isArray(hypothesis?.supporting_evidence) ? hypothesis.supporting_evidence : [],
+                    mechanistic_rationale: hypothesis?.mechanistic_rationale || 'No rationale provided',
+                    suggested_experiment: hypothesis?.suggested_experiment || {},
+                    limitations: hypothesis?.limitations || 'No limitations specified'
+                };
+                
+                const safeExperiment = {
+                    model: safeHypothesis.suggested_experiment?.model || 'Not specified',
+                    intervention: safeHypothesis.suggested_experiment?.intervention || 'Not specified',
+                    primary_outcome: safeHypothesis.suggested_experiment?.primary_outcome || 'Not specified',
+                    design_summary: safeHypothesis.suggested_experiment?.design_summary || 'Not specified',
+                    safety_measures: safeHypothesis.suggested_experiment?.safety_measures || ''
+                };
+                
+                return `
+                    <div class="card hypothesis-card">
+                        <div class="card-body">
+                            <div class="hypothesis-header">
+                                <div class="hypothesis-icon">
+                                    ${safeHypothesis.type === 'evidence-backed' ? '🎯' : '💡'}
+                                </div>
+                                <div class="hypothesis-title">
+                                    <div class="hypothesis-statement">${safeHypothesis.id}: ${safeHypothesis.statement}</div>
+                                    <div>
+                                        <span class="badge ${getPlausibilityClass(safeHypothesis.plausibility)}">
+                                            ${safeHypothesis.plausibility} Plausibility
+                                        </span>
+                                        <span class="badge badge-primary">
+                                            Confidence: ${Math.round(safeHypothesis.confidence_score * 100)}%
+                                        </span>
+                                        <span class="badge badge-primary">
+                                            ${safeHypothesis.type.replace('-', ' ')}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            ${safeHypothesis.supporting_evidence.length > 0 ? `
+                                <div class="mb-3">
+                                    <div class="section-title">
+                                        <span>📋</span> Supporting Evidence
+                                    </div>
+                                    <div class="evidence-list">
+                                        ${safeHypothesis.supporting_evidence.map(evidence => `
+                                            <div class="evidence-item">
+                                                ${evidence || 'No evidence text'}
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="mb-3">
+                                <div class="section-title">
+                                    <span>🔬</span> Mechanistic Rationale
+                                </div>
+                                <p>${safeHypothesis.mechanistic_rationale}</p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="section-title">
+                                    <span>🧪</span> Suggested Experiment
+                                </div>
+                                <div class="experiment-box">
+                                    <div class="experiment-grid">
+                                        <div>
+                                            <strong>Model:</strong> ${safeExperiment.model}
+                                        </div>
+                                        <div>
+                                            <strong>Intervention:</strong> ${safeExperiment.intervention}
+                                        </div>
+                                        <div>
+                                            <strong>Primary Outcome:</strong> ${safeExperiment.primary_outcome}
+                                        </div>
+                                        <div>
+                                            <strong>Design:</strong> ${safeExperiment.design_summary}
+                                        </div>
+                                    </div>
+                                    ${safeExperiment.safety_measures ? `
+                                        <div class="safety-warning">
+                                            <strong>⚠️ Safety Measures:</strong>
+                                            <div>${safeExperiment.safety_measures}</div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="section-title">
+                                    <span>📝</span> Limitations & Uncertainties
+                                </div>
+                                <p>${safeHypothesis.limitations}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function displayEvidence(evidence) {
+            // Add safety check
+            if (!evidence || !Array.isArray(evidence)) {
+                evidence = [];
+            }
+            
+            if (evidence.length === 0) {
+                document.getElementById('evidence-container').innerHTML = `
+                    <h3 style="margin-bottom: 20px;">Retrieved Evidence</h3>
+                    <div class="alert alert-info">
+                        <span>ℹ️</span>
+                        No evidence retrieved for this query.
+                    </div>
+                `;
+                return;
+            }
+            
+            evidenceTableBody.innerHTML = evidence.map(item => {
+                const safeItem = {
+                    pmid: item?.pmid || 'N/A',
+                    title: item?.title || 'No title',
+                    snippet: item?.snippet || 'No snippet available',
+                    score: item?.score || null
+                };
+                
+                return `
+                    <tr>
+                        <td style="font-family: monospace;">${safeItem.pmid}</td>
+                        <td style="font-weight: 500;">${safeItem.title}</td>
+                        <td>${safeItem.snippet}</td>
+                        <td>
+                            ${safeItem.score !== null ? `
+                                <span class="badge ${getScoreClass(safeItem.score)}">
+                                    ${safeItem.score.toFixed(3)}
+                                </span>
+                            ` : 'N/A'}
+                        </td>
+                        <td>
+                            ${safeItem.pmid !== 'N/A' ? `
+                                <a href="https://pubmed.ncbi.nlm.nih.gov/${safeItem.pmid}" 
+                                   target="_blank" 
+                                   class="btn btn-outline btn-sm">
+                                    <span>🔗</span> View
+                                </a>
+                            ` : 'N/A'}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function displayKGTriples(triples) {
+    // Add comprehensive safety checks
+    if (!triples || !Array.isArray(triples)) {
+        triples = [];
+    }
+    
+    // Additional check: if it's an array but all elements are null/undefined
+    const validTriples = triples.filter(triple => 
+        triple && 
+        (triple.subject || triple.relation || triple.object)
+    );
+    
+    console.log('Original triples:', triples);
+    console.log('Valid triples:', validTriples);
+    
+    if (validTriples.length === 0) {
+        document.getElementById('kg-container').innerHTML = `
+            <h3 style="margin-bottom: 20px;">Knowledge Graph Triples</h3>
+            <div class="alert alert-info">
+                <span>ℹ️</span>
+                <div>
+                    <strong>No valid knowledge graph triples found for this query.</strong>
+                    <div style="margin-top: 8px; font-size: 0.9rem;">
+                        The system detected ${triples.length} potential relationships, but they couldn't be properly displayed.
+                        <br><br>
+                        <strong>Possible reasons:</strong>
+                        <ul style="margin: 8px 0; padding-left: 20px;">
+                            <li>Data format inconsistencies in the response</li>
+                            <li>Incomplete relationship data</li>
+                            <li>Temporary backend processing issue</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    kgTriplesList.innerHTML = validTriples.map(triple => {
+        const safeTriple = {
+            subject: triple?.subject || 'Unknown subject',
+            relation: triple?.relation || 'Unknown relation',
+            object: triple?.object || 'Unknown object',
+            supporting_pmids: Array.isArray(triple?.supporting_pmids) ? triple.supporting_pmids : []
+        };
+        
+        return `
+            <div class="kg-triple">
+                <div class="kg-subject">${safeTriple.subject}</div>
+                <div class="kg-relation">${safeTriple.relation}</div>
+                <div class="kg-object">${safeTriple.object}</div>
+                ${safeTriple.supporting_pmids.length > 0 ? `
+                    <div class="kg-pmids">
+                        Supported by: ${safeTriple.supporting_pmids.join(', ')}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }).join('');
+    
+    // Update the count to show valid triples
+    document.getElementById('triple-count').textContent = `${validTriples.length} KG triples`;
+}
+        
+        function getPlausibilityClass(plausibility) {
+            switch (plausibility) {
+                case 'High': return 'badge-success';
+                case 'Medium': return 'badge-warning';
+                case 'Low': return 'badge-error';
+                default: return 'badge-primary';
+            }
+        }
+        
+        function getScoreClass(score) {
+            if (score >= 0.8) return 'badge-success';
+            if (score >= 0.6) return 'badge-warning';
+            return 'badge-error';
+        }
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorAlert.classList.remove('hidden');
+            errorAlert.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function hideError() {
+            errorAlert.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
