@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import hypothesis, retriever, kg
+from .routers import hypothesis, retriever, kg
 from fastapi.templating import Jinja2Templates
 app = FastAPI(
     title="AI Research Assistant API",
